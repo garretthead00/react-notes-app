@@ -18,7 +18,7 @@ const NoteCard = ({
       }}
       animate={{ opacity: 1, translateX: 0, translateY: 0 }}
       transition={{ duration: 0.3, delay: idx * 0.075 }}
-      className="min-w-[300px] max-w-[328px] max-h-[156px] border px-4 rounded-xl cursor-pointer hover:opacity-50 bg-white shadow-md"
+      className="w-[328px] min-w-[328px] max-w-[328px] max-h-[156px] border px-4 rounded-xl cursor-pointer hover:opacity-50 bg-white shadow-md"
     >
       <div className="flex flex-row gap-x-4 my-2 justify-end text-l text-gray-500 h-6">
         <div className="flex-1">
