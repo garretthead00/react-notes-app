@@ -63,8 +63,8 @@ const NoteModal = ({ selectedNote, closeModal, updateNote }) => {
                   onChange={handleSelect}
                 >
                   {notebooks &&
-                    notebooks.map((notebook) => (
-                      <option value={notebook.name} data-value={notebook}>
+                    notebooks.map((notebook, idx) => (
+                      <option key={`notebook-option-${idx}`}value={notebook.name} data-value={notebook}>
                         {notebook.name}
                       </option>
                     ))}

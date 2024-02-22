@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import NoteModal from "../components/NoteModal";
 import TabBar from "../components/TabBar";
 import NoteCard from "../components/NoteCard";
-import { notesAPI } from "../api";
+import { mockNotes } from "../data";
 import { v4 as uuidv4 } from "uuid";
 import { getNotebookData } from "../utils";
 
@@ -17,28 +17,26 @@ const Bookshelf = () => {
 
   useEffect(() => {
     async function loadNotebooks() {
-      await notesAPI.getAllNotes().then((res) => {
-        setNotes(res);
-      });
+      setNotes(mockNotes);
     }
     loadNotebooks();
   }, []);
 
   useEffect(() => {
     if (notes) {
-      setFilteredNotes(filterNotes);
+      const filtered =
+        selectedNotebook !== "All"
+          ? notes.filter(
+              (note) =>
+                note.notebook === selectedNotebook &&
+                note.title.match(new RegExp(filterQuery, "i"))
+            )
+          : notes.filter((note) =>
+              note.title.match(new RegExp(filterQuery, "i"))
+            );
+      setFilteredNotes(filtered);
     }
-  }, [notes, selectedNotebook, filterQuery]);
-
-  const filterNotes = () => {
-    return selectedNotebook !== "All"
-    ? notes.filter(
-        (note) =>
-          note.notebook === selectedNotebook &&
-          note.title.match(new RegExp(filterQuery, "i"))
-      )
-    : notes.filter((note) => note.title.match(new RegExp(filterQuery, "i")));
-  };
+  }, [notes, selectedNotebook, filterQuery]);;
 
   const selectNotebook = (name) => setSelectedNotebook(name);
 
@@ -52,27 +50,22 @@ const Bookshelf = () => {
   };
 
   const deleteNote = async (note) => {
-    console.group('-----deleting note: ', note)
-    const deletedNote = await notesAPI.deleteNote(note.id);
-    console.group('-deletedNote ', deletedNote);
-    const remainingNotes = notes.filter((note) => note.id !== deletedNote.id);
-    console.group('-remainingNotes ', remainingNotes);
+    const remainingNotes = notes.filter((n) => n.id !== note.id);
     setNotes(remainingNotes);
   };
   const duplicateNote = async (note) => {
-    const newNote = {
+    const duplicatedNote = {
       ...note,
       id: uuidv4(),
       title: `[Copy]-${note.title}`,
       dateCreated: Date.now(),
     };
-    const duplicatedNote = await notesAPI.createNote(newNote);
     setNotes([duplicatedNote, ...notes]);
     selectNote(duplicatedNote);
   };
 
   const createNote = async () => {
-    const note = {
+    const newNote = {
       id: uuidv4(),
       title: "",
       content: "",
@@ -80,13 +73,11 @@ const Bookshelf = () => {
       tags: [],
       dateCreated: Date.now(),
     };
-    const newNote = await notesAPI.createNote(note);
     setNotes([newNote, ...notes]);
     selectNote(newNote);
   };
 
-  const updateNote = async (note) => {
-    const updatedNote = await notesAPI.updateNote(note);
+  const updateNote = async (updatedNote) => {
     setNotes(
       notes.map((note) => {
         return note.id === updatedNote.id ? updatedNote : note;
@@ -108,7 +99,7 @@ const Bookshelf = () => {
           <div>
             <ul className="flex flex-wrap gap-4 xs:justify-center sm:justify-start">
               {filteredNotes && filteredNotes.length > 0 ? (
-                filteredNotes.map((note,idx) => (
+                filteredNotes.map((note, idx) => (
                   <NoteCard
                     key={`note-card-${note.id}`}
                     idx={idx}

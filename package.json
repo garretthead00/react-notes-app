@@ -40,7 +40,6 @@
     ]
   },
   "devDependencies": {
-    "json-server": "^1.0.0-alpha.23",
     "tailwindcss": "^3.4.1"
   }
 }
